@@ -1,0 +1,280 @@
+@baseUrl = http://localhost:5000/api
+
+### --------------------------------------------------------
+### STEP 1: GENERATE ACCOUNTS & TOKENS
+### Run these registers first so they have properly hashed passwords.
+### --------------------------------------------------------
+
+### 1a. Register Test Customer
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "full_name": "Test Customer",
+  "email": "testcustomer@gmail.com",
+  "password": "password123",
+  "role": "customer"
+}
+
+### 1b. Register Test Support Agent
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "full_name": "Test Support",
+  "email": "testsupport@gmail.com",
+  "password": "password123",
+  "role": "support_agent"
+}
+
+### 1c. Register Test Admin
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "full_name": "Test Admin",
+  "email": "testadmin@gmail.com",
+  "password": "password123",
+  "role": "admin"
+}
+
+### --------------------------------------------------------
+### STEP 2: LOGIN TO GET TOKENS
+### Execute these, copy the "token" string from the response, 
+### and paste them into the variables directly below.
+### --------------------------------------------------------
+
+### 2a. Login Customer
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "priya@gmail.com",
+  "password": "123456"
+}
+
+### 2b. Login Support Agent
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "testsupport@gmail.com",
+  "password": "password123"
+}
+
+### 2c. Login Admin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "rahul@gmail.com",
+  "password": "123456"
+}
+
+### ---> PASTE YOUR TOKENS HERE AFTER LOGGING IN <---
+@customerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzc5NzgzMjc4LCJleHAiOjE3ODAzODgwNzh9.uqBkSYkXLU69QK-qwodoSXc2M_VjxSq_of3Zl-paP6U
+@supportToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsInJvbGUiOiJzdXBwb3J0X2FnZW50IiwiaWF0IjoxNzc5Njk1MjcyLCJleHAiOjE3ODAzMDAwNzJ9.EgXdQsr5OjLLzvqJfznqISgrUyi6A6e2ddc1PBV8dOY
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3OTY5NTI5NywiZXhwIjoxNzgwMzAwMDk3fQ.oEUHVngWEsGOkr-7oOWTNeP5Qt6TLMf6CtaJTPMhMmI
+
+
+### ==========================================
+### 3. DASHBOARD (Uses seeded data counts)
+### ==========================================
+
+### Get Customer Dashboard (Will be mostly 0 for the new test customer)
+GET {{baseUrl}}/dashboard/customer
+Authorization: Bearer {{customerToken}}
+
+### Get Support Dashboard
+GET {{baseUrl}}/dashboard/support
+Authorization: Bearer {{supportToken}}
+
+### Get Admin Dashboard
+GET {{baseUrl}}/dashboard/admin
+Authorization: Bearer {{adminToken}}
+
+
+### ==========================================
+### 4. ORDERS & ITEMS (Using seeded data IDs)
+### ==========================================
+
+### Get all orders (Admin or Support)
+GET {{baseUrl}}/orders
+Authorization: Bearer {{supportToken}}
+
+### Get specific order (ORD-1001)
+GET {{baseUrl}}/orders/1
+Authorization: Bearer {{supportToken}}
+
+### Get items for order 1 (Wireless Headphones)
+GET {{baseUrl}}/orders/1/items
+Authorization: Bearer {{supportToken}}
+
+### Get specific order item
+GET {{baseUrl}}/order-items/1
+Authorization: Bearer {{supportToken}}
+
+
+### ==========================================
+### 5. RETURNS (Using seeded data IDs)
+### ==========================================
+
+### Get all return requests
+GET {{baseUrl}}/returns
+Authorization: Bearer {{supportToken}}
+
+### Get specific return request (RET-1001)
+GET {{baseUrl}}/returns/1
+Authorization: Bearer {{supportToken}}
+
+### Create a new return request 
+### (Using the logged-in test customer for Order Item 3: Bluetooth Speaker)
+POST {{baseUrl}}/returns
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "order_item_id": 3,
+  "reason": "Defective Product",
+  "description": "The speaker won't pair with my phone."
+}
+
+### Update return status (Update RET-1002 to Approved)
+PUT {{baseUrl}}/returns/2/status
+Authorization: Bearer {{supportToken}}
+Content-Type: application/json
+
+{
+  "status": "Approved"
+}
+
+### Delete a return request (Delete RET-1010)
+DELETE {{baseUrl}}/returns/10
+Authorization: Bearer {{adminToken}}
+
+
+### ==========================================
+### 6. COMMENTS (Using seeded data IDs)
+### ==========================================
+
+### Get comments for return request 1
+GET {{baseUrl}}/returns/1/comments
+Authorization: Bearer {{customerToken}}
+
+### Add a comment to return request 1
+POST {{baseUrl}}/returns/1/comments
+Authorization: Bearer {{supportToken}}
+Content-Type: application/json
+
+{
+  "comment": "We will process a replacement within 24 hours."
+}
+
+
+### ==========================================
+### 7. REFUNDS (Using seeded data IDs)
+### ==========================================
+
+### Get all refunds
+GET {{baseUrl}}/refunds
+Authorization: Bearer {{adminToken}}
+
+### Create a new refund (For return request 2)
+POST {{baseUrl}}/refunds
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "return_request_id": 2,
+  "refund_amount": 1599.00,
+  "payment_method": "Net Banking"
+}
+
+### Update refund status (Update REF-1002 to Completed)
+PUT {{baseUrl}}/refunds/2/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "refund_status": "Completed"
+}
+
+
+### ==========================================
+### 8. NOTIFICATIONS (Using seeded data IDs)
+### ==========================================
+
+### Get notifications for logged in user
+GET {{baseUrl}}/notifications
+Authorization: Bearer {{customerToken}}
+
+### Mark all notifications as read
+POST {{baseUrl}}/notifications/read-all
+Authorization: Bearer {{customerToken}}
+
+
+### ==========================================
+### 9. INSPECTION REPORTS (Using seeded data IDs)
+### ==========================================
+
+### Get inspection report for return request 1
+GET {{baseUrl}}/inspection/1
+Authorization: Bearer {{supportToken}}
+
+### Create an inspection report for return request 2
+POST {{baseUrl}}/inspection
+Authorization: Bearer {{supportToken}}
+Content-Type: application/json
+
+{
+  "return_request_id": 2,
+  "inspector_name": "Test Support Agent",
+  "product_condition": "New in box",
+  "packaging_condition": "Undamaged",
+  "accessories_included": "Yes",
+  "inspection_notes": "Customer returned unopened wrong item.",
+  "inspection_result": "Approve Return"
+}
+
+
+### ==========================================
+### 10. USERS (Using seeded data IDs)
+### ==========================================
+
+### Get all users
+GET {{baseUrl}}/users
+Authorization: Bearer {{adminToken}}
+
+### Get profile of logged-in user
+GET {{baseUrl}}/users/profile
+Authorization: Bearer {{customerToken}}
+
+### Update user status (Update seeded user id 2 - Priya - to Inactive)
+PUT {{baseUrl}}/users/2/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "Inactive"
+}
+
+
+### ==========================================
+### 11. SETTINGS (Using seeded data IDs)
+### ==========================================
+
+### Get settings
+GET {{baseUrl}}/settings
+Authorization: Bearer {{adminToken}}
+
+### Update settings
+PUT {{baseUrl}}/settings
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "system_name": "Nxt Watch RMS Pro",
+  "support_email": "help@nxtwatch.com",
+  "website": "https://nxtwatch.com",
+  "currency": "INR"
+}
