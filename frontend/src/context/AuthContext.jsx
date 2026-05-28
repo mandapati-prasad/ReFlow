@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
         try {
           setUser(JSON.parse(storedUser));
         } catch (error) {
+          // If stored user is corrupted, clear it
           console.error("Failed to parse user data", error);
           logout();
         }
@@ -37,6 +38,8 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       return userData;
     } catch (error) {
+      // THE FIX: Throw the error back to Login.jsx instead of toasting it here!
+      // This stops Login.jsx from navigating to the dashboard.
       throw error;
     }
   };
@@ -45,6 +48,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("reflow_token");
     localStorage.removeItem("reflow_user");
     setUser(null);
+    // Optional: window.location.href = '/login'; // Redirect to login
   };
 
   return (
