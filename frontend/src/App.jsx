@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css"; // Don't forget the CSS!
 
 import { AuthProvider } from "./context/AuthContext";
 import { Login } from "./pages/Login/Login";
+import { Layout } from "./components/Layout/Layout";
 
 function App() {
   return (
@@ -11,6 +12,10 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Route>
         </Routes>
       </AuthProvider>
 
