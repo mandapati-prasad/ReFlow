@@ -73,7 +73,7 @@ export const Button = styled.button`
   }
 `;
 
-// NEW: Styled container for the registration link
+
 export const RegisterPrompt = styled.div`
   margin-top: 24px;
   text-align: center;
@@ -91,3 +91,37 @@ export const RegisterPrompt = styled.div`
     }
   }
 `;
+
+export const Container = styled.div`
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const FormCard = styled.form`
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+// const Input = styled.input`
+//   padding: 12px;
+//   border: 1px solid #ccc;
+//   border-radius: 4px;
+// `;
+// const Button = styled.button`
+//   padding: 12px;
+//   background: #4f46e5;
+//   color: white;
+//   border: none;
+//   border-radius: 4px;
+//   font-weight: bold;
+//   cursor: pointer;
+// `;
