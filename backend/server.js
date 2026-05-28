@@ -8,6 +8,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const orderItemRoutes = require("./routes/orderItemRoutes");
 const returnRoutes = require("./routes/returnRoutes");
 const inspectionsRoute = require("./routes/inspectionRoutes");
+const refundRoutes = require("./routes/refundRoutes");
 const app = express();
 
 app.use(cors());
@@ -20,6 +21,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/order-items", orderItemRoutes);
 app.use("/api/returns", returnRoutes);
 app.use("/api/inspection", inspectionsRoute);
+app.use("/api/refunds", refundRoutes);
 
 const PORT = process.env.PORT || 5000;
 
