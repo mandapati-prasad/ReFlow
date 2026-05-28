@@ -11,6 +11,7 @@ const inspectionsRoute = require("./routes/inspectionRoutes");
 const refundRoutes = require("./routes/refundRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/api/inspection", inspectionsRoute);
 app.use("/api/refunds", refundRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 const PORT = process.env.PORT || 5000;
 
