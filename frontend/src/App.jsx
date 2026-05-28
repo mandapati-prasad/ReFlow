@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css"; // Don't forget the CSS!
 import { AuthProvider } from "./context/AuthContext";
 import { Login } from "./pages/Login/Login";
 import { Layout } from "./components/Layout/Layout";
+import { Dashboard } from "./pages/Dashboard/Dashboard";
 
 function App() {
   return (
