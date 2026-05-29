@@ -5,14 +5,15 @@ import { Spinner } from "../../components/Loader/Spinner";
 
 import { Card, Avatar } from "./styledComponents";
 
+const imgUrl = import.meta.env.VITE_BACKEND_IMG_URL
+
 export const Profile = () => {
+
   const queryClient = useQueryClient();
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile"],
     queryFn: fetchProfile,
   });
-
-  console.log(profile);
 
   const mutation = useMutation({
     mutationFn: updateProfileImage,
@@ -41,7 +42,7 @@ export const Profile = () => {
           <Avatar
             src={
               profile?.profile_image
-                ? `http://localhost:5000/${profile.profile_image}`
+                ? `${imgUrl}${profile.profile_image}`
                 : "https://plus.unsplash.com/premium_vector-1682269287900-d96e9a6c188b?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             }
             alt="Avatar"

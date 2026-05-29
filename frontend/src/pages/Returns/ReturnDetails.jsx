@@ -61,6 +61,8 @@ const Button = styled.button`
   }
 `;
 
+const imgUrl = import.meta.env.VITE_BACKEND_IMG_URL;
+
 export const ReturnDetails = () => {
   const { id } = useParams();
   const { user } = useAuth();
@@ -152,7 +154,7 @@ export const ReturnDetails = () => {
                   Uploaded Image
                 </span>
                 <img
-                  src={`http://localhost:5000/${details.image_url}`}
+                  src={`${imgUrl}${details.image_url}`}
                   alt="Return evidence"
                   style={{ maxWidth: "200px", borderRadius: "8px" }}
                 />
