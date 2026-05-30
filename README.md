@@ -390,7 +390,7 @@ Below is a detailed summary of the available REST API endpoints across the syste
 
 - ### Inspection Queue
 
-<img src="./UI_Screens/support_agent/inspections.png" alt="Dashboard UI" width="600" height="300">
+<img src="./UI_Screens/support_agent/Inspections.png" alt="Dashboard UI" width="600" height="300">
 
 - ### Inspection Report Form
 
