@@ -48,7 +48,7 @@ npm install
 ```
 
 **4. Start the Development Servers**
-Open two separate terminal windows.
+Open four separate terminal windows.
 
 _Terminal 1 (Backend):_
 
@@ -57,7 +57,22 @@ cd backend
 npm run dev
 ```
 
-_Terminal 2 (Frontend):_
+_Terminal 2 (Database Setup):_
+
+```bash
+sqlite3 returns.db
+.read ./database/schema.sql
+.read ./database/seed.sql
+```
+
+_Terminal 3 (Password Encryption):_
+
+```bash
+cd backend
+node fix.js
+```
+
+_Terminal 4 (Frontend):_
 
 ```bash
 cd frontend
@@ -66,7 +81,9 @@ npm run dev
 
 ## 🔐 Environment Variables
 
-To run this project, you will need to add the following environment variables to your `backend/.env` file. Do **not** commit this file to version control.
+To run this project, you will need to add the following environment variables to your `backend/.env` file and `frontend/.env` file.
+
+**_ backend/.env _**
 
 ```env
 # Server Configuration
@@ -74,6 +91,16 @@ PORT=5000
 
 # Authentication
 JWT_SECRET=your_super_secret_jwt_key_here
+```
+
+**_ frontend/.env _**
+
+```env
+#api base url
+VITE_API_URL = http://localhost:5000/api
+
+#backend images base url
+VITE_BACKEND_IMG_URL = http://localhost:5000/
 ```
 
 ## 📂 Project Folder Structure
@@ -177,8 +204,30 @@ The SQLite database is normalized to track the full history of an item's return 
 - `email` (String, Unique)
 - `password` (String, Hashed)
 - `role` (Enum: 'customer', 'support_agent', 'admin')
+- `phone` (String)
+- `address` (String)
+- `profile_image` (String)
 - `status` (Enum: 'active', 'inactive') - _Used for Admin-level access revoking._
 - `created_at` (Timestamp)
+
+### `orders`
+
+- `id` (PK)
+- `order_number` (String, e.g., 'ORD-001...')
+- `customer_id` (FK -> users)
+- `total_amount` (Decimal)
+- `status` (String)
+- `created_at` (Timestamp)
+
+### `order_items`
+
+- `id` (PK)
+- `order_id` (FK -> orders)
+- `product_name` (String)
+- `category` (String)
+- `quantity` (Decimal)
+- `price` (Decimal)
+- `image_url` (String)
 
 ### `return_requests`
 
@@ -241,6 +290,138 @@ The SQLite database is normalized to track the full history of an item's return 
 - `type` (String)
 - `is_read` (Boolean/Integer: 0 or 1)
 - `created_at` (Timestamp)
+
+## 📡 API Endpoints Summary
+
+Below is a detailed summary of the available REST API endpoints across the system, categorized by their functional domain.
+
+| Method     | End Point                          | Purpose                                                                      |
+| :--------- | :--------------------------------- | :--------------------------------------------------------------------------- |
+| **POST**   | `/api/auth/login`                  | Authenticate a user and receive an access token.                             |
+| **GET**    | `/api/dashboard/customer`          | Retrieve metrics and data for the customer dashboard.                        |
+| **GET**    | `/api/dashboard/support`           | Retrieve metrics and data for the support agent dashboard.                   |
+| **GET**    | `/api/dashboard/admin`             | Retrieve metrics and data for the administrator dashboard.                   |
+| **GET**    | `/api/orders`                      | Retrieve a paginated list of all orders.                                     |
+| **GET**    | `/api/orders/:id`                  | Retrieve comprehensive details for a specific order.                         |
+| **GET**    | `/api/orders/:id/items`            | Retrieve a list of all items associated with a specific order.               |
+| **GET**    | `/api/order-items/:id`             | Retrieve detailed information for a specific order item.                     |
+| **GET**    | `/api/returns`                     | Retrieve a list of all return requests.                                      |
+| **GET**    | `/api/returns/:id`                 | Retrieve detailed information for a specific return request.                 |
+| **POST**   | `/api/returns`                     | Submit a new return request.                                                 |
+| **PUT**    | `/api/returns/:id/status`          | Update the lifecycle status of a specific return request.                    |
+| **DELETE** | `/api/returns/:id`                 | Cancel or delete a return request.                                           |
+| **GET**    | `/api/returns/:id/comments`        | Retrieve all discussion comments for a specific return request.              |
+| **POST**   | `/api/returns/:id/comments`        | Add a new comment to a specific return request.                              |
+| **GET**    | `/api/refunds`                     | Retrieve a list of pending or processed refunds.                             |
+| **POST**   | `/api/refunds`                     | Initiate or process a new refund transaction.                                |
+| **PUT**    | `/api/refunds/:id/status`          | Update the approval/processing status of a specific refund.                  |
+| **GET**    | `/api/notifications`               | Retrieve a list of system notifications for the authenticated user.          |
+| **POST**   | `/api/notifications/read-all`      | Mark all unread notifications as read for the user.                          |
+| **GET**    | `/api/inspection/:returnRequestId` | Retrieve the inspection outcome/details for a specific return request.       |
+| **POST**   | `/api/inspection`                  | Submit a new quality inspection report for a returned item.                  |
+| **GET**    | `/api/users`                       | Retrieve a list of all registered users (admin only).                        |
+| **GET**    | `/api/users/profile`               | Retrieve the profile details of the currently authenticated user.            |
+| **PUT**    | `/api/users/profile-image`         | Upload or update the authenticated user's profile image.                     |
+| **PUT**    | `/api/users/:id/status`            | Update the active/suspended status of a specific user account.               |
+| **DELETE** | `/api/users/:id`                   | Permanently delete a user account from the system.                           |
+| **GET**    | `/api/settings`                    | Retrieve global application or user-specific settings.                       |
+| **PUT**    | `/api/settings`                    | Update application or user-specific settings.                                |
+| **GET**    | `/api/analytics/top-reasons`       | Retrieve analytical data detailing the most common reasons for item returns. |
+| **GET**    | `/api/analytics/requests-timeline` | Retrieve a timeline dataset of return requests for trend analysis.           |
+| **GET**    | `/api/analytics/overview`          | Retrieve a high-level overview of system analytics                           |
+
+# 🖼️UI Screenshots
+
+## 1. Customer Screens
+
+- ### Dashboard Overview
+
+<img src="./UI_Screens/customer/dashboard.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Orders
+
+<img src="./UI_Screens/customer/orders.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Order_details
+
+<img src="./UI_Screens/customer/order_details.png" alt="Dashboard UI" width="600" height="300">
+
+- ### My Returns
+
+<img src="./UI_Screens/customer/my_returns.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Return Details
+
+<img src="./UI_Screens/customer/return_details.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Return Form
+
+<img src="./UI_Screens/customer/return_form.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Refund History
+
+<img src="./UI_Screens/customer/Refund-history.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Notifications
+
+<img src="./UI_Screens/customer/notifications.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Profile
+
+<img src="./UI_Screens/customer/profile.png" alt="Dashboard UI" width="600" height="300">
+
+## 2. Support Agent Screens
+
+- ### Dashboard Overview
+
+<img src="./UI_Screens/support_agent/dashboard.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Return Management
+
+<img src="./UI_Screens/support_agent/return-management.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Return Details
+
+<img src="./UI_Screens/support_agent/return-details.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Orders
+
+<img src="./UI_Screens/support_agent/orders.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Inspection Queue
+
+<img src="./UI_Screens/support_agent/inspections.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Inspection Report Form
+
+<img src="./UI_Screens/support_agent/inspection_report_form.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Notifications
+
+<img src="./UI_Screens/support_agent/notifications.png" alt="Dashboard UI" width="600" height="300">
+
+## 3. Admin Screens
+
+- ### Dashboard Overview
+
+<img src="./UI_Screens/admin/dashboard.png" alt="Dashboard UI" width="600" height="300">
+
+- ### Refunds Queue and Refunds History
+
+<img src="./UI_Screens/admin/refunds_queue.png" alt="Dashboard UI" width="450" height="300">
+<img src="./UI_Screens/admin/refunds_history.png" alt="Dashboard UI" width="450" height="300">
+
+- ### Process Refund
+
+<img src="./UI_Screens/admin/process-refund.png" alt="Dashboard UI" width="600" height="300">
+
+- ### User Management
+
+<img src="./UI_Screens/admin/user_management.png" alt="Dashboard UI" width="600" height="300">
+
+- ### System Settings
+
+<img src="./UI_Screens/admin/system_settings.png" alt="Dashboard UI" width="600" height="300">
 
 ## 🔮 Future Enhancements
 
